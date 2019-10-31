@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz.moviefun.movies;
+package org.superbiz.moviefun.moviesapi;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -36,23 +37,32 @@ public class MovieServlet extends HttpServlet {
 
     public static int PAGE_SIZE = 5;
 
-    private MoviesBean moviesBean;
+    //private MoviesBean moviesBean;
+    private MoviesClient moviesClient;
 
-    public MovieServlet(MoviesBean moviesBean) {
-        this.moviesBean = moviesBean;
+    public MovieServlet(MoviesClient moviesClient) {
+        this.moviesClient = moviesClient;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        process(request, response);
+        try {
+            process(request, response);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        process(request, response);
+        try {
+            process(request, response);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, URISyntaxException {
         String action = request.getParameter("action");
 
         if ("Add".equals(action)) {
@@ -63,9 +73,9 @@ public class MovieServlet extends HttpServlet {
             int rating = Integer.parseInt(request.getParameter("rating"));
             int year = Integer.parseInt(request.getParameter("year"));
 
-            Movie movie = new Movie(title, director, genre, rating, year);
+            MovieInfo movieInfo = new MovieInfo(title, director, genre, rating, year);
 
-            moviesBean.addMovie(movie);
+            moviesClient.addMovie(movieInfo);
             response.sendRedirect("moviefun");
             return;
 
@@ -73,7 +83,7 @@ public class MovieServlet extends HttpServlet {
 
             String[] ids = request.getParameterValues("id");
             for (String id : ids) {
-                moviesBean.deleteMovieId(new Long(id));
+                moviesClient.deleteMovieId(new Long(id));
             }
 
             response.sendRedirect("moviefun");
@@ -86,11 +96,11 @@ public class MovieServlet extends HttpServlet {
             int count = 0;
 
             if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-                count = moviesBean.countAll();
+                count = moviesClient.countAll();
                 key = "";
                 field = "";
             } else {
-                count = moviesBean.count(field, key);
+                count = moviesClient.count(field, key);
             }
 
             int page = 1;
@@ -114,12 +124,12 @@ public class MovieServlet extends HttpServlet {
             }
 
             int start = (page - 1) * PAGE_SIZE;
-            List<Movie> range;
+            List<MovieInfo> range;
 
             if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-                range = moviesBean.findAll(start, PAGE_SIZE);
+                range = moviesClient.findAll(start, PAGE_SIZE);
             } else {
-                range = moviesBean.findRange(field, key, start, PAGE_SIZE);
+                range = moviesClient.findRange(field, key, start, PAGE_SIZE);
             }
 
             int end = start + range.size();
