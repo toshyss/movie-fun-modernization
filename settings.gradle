@@ -11,3 +11,4 @@ include "components:movie-fun-api"
 include "components:cf-support"
 
 include "databases:album-database"
+include "databases:movie-database"

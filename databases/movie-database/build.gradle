@@ -20,9 +20,9 @@ import org.flywaydb.gradle.task.FlywayMigrateTask
 task cfMigrate(type: FlywayMigrateTask) {
 
     extension = new FlywayExtension(
-            url: "jdbc:mysql://localhost:63306/service_instance_db?useSSL=false",
-            user: "dc713ead26b1461c955c128b0ccb152d",
-            password: "5pofu99r8jmjgvyy",
+            url: "jdbc:mysql://localhost:63307/service_instance_db?useSSL=false",
+            user: "efb374b73c304b228d93c8a08eddf9b0",
+            password: "kd9fncjl30ohf1gg",
             outOfOrder: false,
             baselineOnMigrate: true
     )
